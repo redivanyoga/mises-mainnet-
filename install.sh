@@ -3,6 +3,13 @@ echo "               Auto Installer Mises Mainnet v1.0.4               ";
 echo -e "\e[0m"
 sleep 1
 
+
+# Update
+sudo apt-get update && sudo apt-get upgrade -y
+
+# Package
+sudo apt install jq lz4 build-essential -y
+
 # Variable
 MIS_WALLET=wallet
 MIS=misestmd
@@ -33,20 +40,12 @@ echo -e "YOUR NODE NAME : \e[1m\e[31m$MIS_NODENAME\e[0m"
 echo -e "NODE CHAIN ID  : \e[1m\e[31m$MIS_ID\e[0m"
 echo ""
 
-# Update
-sudo apt-get update && sudo apt-get upgrade -y
-
-# Package
-sudo apt install jq lz4 build-essential -y
-
 # Get mainnet version of mises
 cd $HOME
 wget $MIS_REPO$MIS_VER/misestmd.linux-amd64.tar.gz
 tar -xvf misestmd.linux-amd64.tar.gz
 sudo mv build/$MIS /usr/bin/
 chmod +x /usr/bin/$MIS
-rm -f misestmd.linux-amd64.tar.gz
-rm -rf build
 
 # Create Service
 sudo tee /etc/systemd/system/$MIS.service > /dev/null <<EOF
