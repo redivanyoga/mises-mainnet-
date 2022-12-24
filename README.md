@@ -13,11 +13,23 @@ wget https://raw.githubusercontent.com/redivanyoga/mises-mainnet-/main/install.s
 ```
 
 # STATE SYNC
+ 
  *Stop dulu 
  ```
  sudo systemctl stop misestmd
  ```
- 
+ * Aktifkan state Sync
+   ```
+   cd .misestm/config/
+   ```
+   
+   ```
+   nano config.toml
+   ```
+   * Cari tulisan staste sync dengan cara CTRL + W ketik (statesync) enter
+   * Ganti ENABLE DARI FALSE KE TRUE ( WARNA HIJAU NANTI )
+   * Tutup CTRL X Y enter
+   
  * Jalankan 
     ```
     misestmd unsafe-reset-all
