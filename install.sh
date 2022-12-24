@@ -1,6 +1,3 @@
-
-#
-
 echo -e "\033[0;31m"
 echo "               Auto Installer Mises Mainnet v1.0.4               ";
 echo -e "\e[0m"
@@ -26,7 +23,7 @@ source $HOME/.bash_profile
 
 # Set Vars
 if [ ! $MIS_NODENAME ]; then
-        read -p "sxlzptprjkt@w00t666w00t:~# [ENTER YOUR NODE] > " MIS_NODENAME
+        read -p "silahkan masukan":~# [ENTER YOUR NODE] > " MIS_NODENAME
         echo 'export MIS_NODENAME='$MIS_NODENAME >> $HOME/.bash_profile
 fi
 echo ""
@@ -78,9 +75,6 @@ $MIS init $MIS_NODENAME --chain-id $MIS_ID
 PEERS=40a8318fa18fa9d900f4b0d967df7b1020689fa0@e1.mises.site:26656
 sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/$MIS_FOLDER/config/config.toml
 
-# Create file genesis.json
-touch $HOME/$MIS_FOLDER/config/genesis.json
-
 # Set Config Gas
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.000025$MIS_DENOM\"/" $HOME/$MIS_FOLDER/config/app.toml
 
@@ -120,12 +114,8 @@ s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
 s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/$MIS_FOLDER/config/config.toml
 
 # Start Service
-sudo systemctl start $MIS
+sudo systemctl start && sudo journalctl -fu $MIS -o cat $MIS
 
 echo -e "\e[1m\e[31m[!]\e[0m SETUP FINISHED"
 echo -e "\e[1m\e[31m[!]\e[0m STATE SYNC ESTIMATION CAN TAKE 15-30 MINS PLEASE WAITTING"
-echo ""
-echo -e "\e[1m\e[31m[!]\e[0m CHECK RUNNING LOGS : \e[1m\e[31mjournalctl -fu $MIS -o cat\e[0m"
-echo ""
-
 # End
