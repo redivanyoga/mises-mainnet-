@@ -1,6 +1,3 @@
-# mises-mainnet
-With auto install statesync [ easy to use ] 
-
 
 # Variable
 MIS_WALLET=wallet
