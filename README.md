@@ -12,7 +12,7 @@
 wget https://raw.githubusercontent.com/redivanyoga/mises-mainnet-/main/install.sh && chmod +x install.sh && ./install.sh
 ```
 
-#STATE SYNC
+# STATE SYNC
  *Stop dulu 
  ```
  sudo systemctl stop misestmd
@@ -25,16 +25,19 @@ wget https://raw.githubusercontent.com/redivanyoga/mises-mainnet-/main/install.s
  * EKSEKUSI
 ``` 
 SNAP_RPC="https://e1.mises.site:443"
+
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
-BLOCK_HEIGHT=$((LATEST_HEIGHT - 500)); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+
 echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
-sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
+
+sed -i -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
 s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
 s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
 s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.misestm/config/config.toml
 
-sudo systemctl restart && sudo journalctl -fu misestmd -o cat
+sudo systemctl restart misestmd && sudo journalctl -u misestmd -f --no-hostname -o cat
 ```
 
 # Chek chunk bila masuk 10 cunk brarti jalan
