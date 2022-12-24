@@ -101,10 +101,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable misestmd
 sudo systemctl restart misestmd
 
-misestmd unsafe-reset-all
+
 
 # Enable state sync
-
+misestmd unsafe-reset-all
 SNAP_RPC="https://e1.mises.site:443"
 
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
