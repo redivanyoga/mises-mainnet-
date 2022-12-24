@@ -96,8 +96,8 @@ sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $
 sed -i -e "s/^snapshot-interval *=.*/snapshot-interval = \"1000\"/" $HOME/$MIS_FOLDER/config/app.toml
 sed -i -e "s/^snapshot-keep-recent *=.*/snapshot-keep-recent = \"2\"/" $HOME/$MIS_FOLDER/config/app.toml
 
-# Enable state sync
 $MIS unsafe-reset-all
+# Enable state sync
 
 SNAP_RPC="https://e1.mises.site:443"
 
@@ -105,9 +105,7 @@ LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
-echo ""
-echo -e "\e[1m\e[31m[!]\e[0m HEIGHT : \e[1m\e[31m$LATEST_HEIGHT\e[0m BLOCK : \e[1m\e[31m$BLOCK_HEIGHT\e[0m HASH : \e[1m\e[31m$TRUST_HASH\e[0m"
-echo ""
+echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
 
 sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
 s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
@@ -119,4 +117,5 @@ sudo systemctl start && sudo journalctl -fu $MIS -o cat $MIS
 
 echo -e "\e[1m\e[31m[!]\e[0m SETUP FINISHED"
 echo -e "\e[1m\e[31m[!]\e[0m STATE SYNC ESTIMATION CAN TAKE 15-30 MINS PLEASE WAITTING"
+echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL sudo sudo journalctl -fu $MIS -o cat $MIS"
 # End
