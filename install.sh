@@ -15,9 +15,34 @@ MIS_WALLET=wallet
 MIS=misestmd
 MIS_ID=mainnet
 MIS_FOLDER=.misestm
-MIS_VER=1.0.4
-MIS_REPO=https://github.com/mises-id/mises-tm/releases/download/
 MIS_DENOM=umis
+
+echo -e "\e[1m\e[32m1. Updating packages... \e[0m" && sleep 1
+# update
+sudo apt update && sudo apt upgrade -y
+
+echo -e "\e[1m\e[32m2. Installing dependencies... \e[0m" && sleep 1
+# packages
+sudo apt install curl build-essential git wget jq make gcc tmux chrony -y
+
+# install go
+ver="1.19" && \
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
+sudo rm -rf /usr/local/go && \
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz" && \
+rm "go$ver.linux-amd64.tar.gz" && \
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile && \
+source $HOME/.bash_profile && \
+go version
+
+echo -e "\e[1m\e[32m3. Downloading and building binaries... \e[0m" && sleep 1
+# download binary
+cd $HOME
+git clone https://github.com/mises-id/mises-tm/
+cd mises-tm/
+git checkout 1.0.4
+make build
+make install
 
 sleep 6
 
