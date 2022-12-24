@@ -15,7 +15,7 @@ wget https://raw.githubusercontent.com/redivanyoga/mises-mainnet-/main/install.s
 #STATE SYNC
  *Stop dulu 
  ```
- sudo sysctemctl stop misestmd
+ sudo systemctl stop misestmd
  ```
  
  * Jalankan 
