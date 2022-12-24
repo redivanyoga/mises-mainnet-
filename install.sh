@@ -1,40 +1,26 @@
 echo -e "\033[0;31m"
 echo "               Auto Installer Mises Mainnet v1.0.4               ";
 echo -e "\e[0m"
-sleep 1
+sleep 2
 
+# set vars
+if [ ! $NODENAME ]; then
+	read -p "Enter node name: " NODENAME
+	echo 'export NODENAME='$NODENAME >> $HOME/.bash_profile
+fi
 
-# Update
-sudo apt-get update && sudo apt-get upgrade -y
-
-# Package
-sudo apt install jq lz4 build-essential -y
-
-# Variable
-MIS_WALLET=wallet
-MIS=misestmd
-MIS_ID=mainnet
-MIS_FOLDER=.misestm
-MIS_DENOM=umis
-
-echo "export MIS_WALLET=${MIS_WALLET}" >> $HOME/.bash_profile
-echo "export MIS=${MIS}" >> $HOME/.bash_profile
-echo "export MIS_ID=${MIS_ID}" >> $HOME/.bash_profile
-echo "export MIS_FOLDER=${MIS_FOLDER}" >> $HOME/.bash_profile
-echo "export MIS_VER=${MIS_VER}" >> $HOME/.bash_profile
-echo "export MIS_REPO=${MIS_REPO}" >> $HOME/.bash_profile
-echo "export MIS_DENOM=${MIS_DENOM}" >> $HOME/.bash_profile
+if [ ! $WALLET ]; then
+	echo "export WALLET=wallet" >> $HOME/.bash_profile
+fi
+echo "export MISES_CHAIN_ID=mainnet" >> $HOME/.bash_profile
 source $HOME/.bash_profile
 
-# Set Vars
-if [ ! $MIS_NODENAME ]; then
-        read -p "silahkan masukan":~# [ENTER YOUR NODE] > " MIS_NODENAME
-        echo 'export MIS_NODENAME='$MIS_NODENAME >> $HOME/.bash_profile
-fi
-echo ""
-echo -e "YOUR NODE NAME : \e[1m\e[31m$MIS_NODENAME\e[0m"
-echo -e "NODE CHAIN ID  : \e[1m\e[31m$MIS_ID\e[0m"
-echo ""
+echo '================================================='
+echo -e "moniker : \e[1m\e[32m$NODENAME\e[0m"
+echo -e "wallet  : \e[1m\e[32m$WALLET\e[0m"
+echo -e "chain-id: \e[1m\e[32m$MISES_CHAIN_ID\e[0m"
+echo '================================================='
+sleep 2
 
 echo -e "\e[1m\e[32m1. Updating packages... \e[0m" && sleep 1
 # update
@@ -63,62 +49,62 @@ git checkout 1.0.4
 make build
 make install
 
-# Create Service
-sudo tee /etc/systemd/system/$MIS.service > /dev/null <<EOF
-[Unit]
-Description=$MIS
-After=network-online.target
 
-[Service]
-User=$USER
-ExecStart=$(which $MIS) start --home $HOME/$MIS_FOLDER
-Restart=on-failure
-RestartSec=3
-LimitNOFILE=65535
+# config
+misestmd config chain-id $MISES_CHAIN_ID
+misestmd config keyring-backend test
 
-[Install]
-WantedBy=multi-user.target
-EOF
+# init
+misestmd init $NODENAME --chain-id $MISES_CHAIN_ID
 
-# Register service
-sudo systemctl daemon-reload
-sudo systemctl enable $MIS
+# download genesis and addrbook
+curl https://e1.mises.site:443/genesis | jq .result.genesis > ~/.misestm/config/genesis.json
 
-# Init generation
-$MIS config chain-id $MIS_ID
-$MIS init $MIS_NODENAME --chain-id $MIS_ID
+# set peers and seeds
+PEERS=40889503320199c676570b417b132755d0414332@rpc.gw.mises.site:26656
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.misestm/config/config.toml
 
-# Set Seeds And Peers
-PEERS=40a8318fa18fa9d900f4b0d967df7b1020689fa0@e1.mises.site:26656
-sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/$MIS_FOLDER/config/config.toml
-
-# Set Config Gas
-sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.000025$MIS_DENOM\"/" $HOME/$MIS_FOLDER/config/app.toml
-
-# Set Config prometheus
-sed -i -e "s/prometheus = false/prometheus = true/" $HOME/$MIS_FOLDER/config/config.toml
-
-# Set Config Pruning
+# config pruning
 pruning="custom"
 pruning_keep_recent="100"
 pruning_keep_every="0"
 pruning_interval="50"
-sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/$MIS_FOLDER/config/app.toml
-sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/$MIS_FOLDER/config/app.toml
-sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/$MIS_FOLDER/config/app.toml
-sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/$MIS_FOLDER/config/app.toml
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.misestm/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.misestm/config/app.toml
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.misestm/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.misestm/config/app.toml
 
-# Set config snapshot
-sed -i -e "s/^snapshot-interval *=.*/snapshot-interval = \"1000\"/" $HOME/$MIS_FOLDER/config/app.toml
-sed -i -e "s/^snapshot-keep-recent *=.*/snapshot-keep-recent = \"2\"/" $HOME/$MIS_FOLDER/config/app.toml
+# set minimum gas price and timeout commit
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.000025umis\"/" $HOME/.misestm/config/app.toml
 
-$MIS unsafe-reset-all
-# Enable state sync
+# enable prometheus
+sed -i -e "s/prometheus = false/prometheus = true/" $HOME/.misestm/config/config.toml
+
+echo -e "\e[1m\e[32m4. Starting service... \e[0m" && sleep 1
+# create service
+sudo tee /etc/systemd/system/misestmd.service > /dev/null <<EOF
+[Unit]
+Description=misestm
+After=network-online.target
+[Service]
+User=$USER
+ExecStart=$(which misestmd) start --home $HOME/.misestm
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# start service
+sudo systemctl daemon-reload
+sudo systemctl enable misestmd
+sudo systemctl restart misestmd
 
 SNAP_RPC="https://e1.mises.site:443"
 
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
-BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 500)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
 echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
@@ -126,12 +112,14 @@ echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
 sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
 s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
 s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
-s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/$MIS_FOLDER/config/config.toml
+s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.misestm/config/config.toml
 
 # Start Service
-sudo systemctl start && sudo journalctl -fu $MIS -o cat $MIS
+sudo systemctl restart && sudo journalctl -fu misestmd -o cat 
 
-echo -e "\e[1m\e[31m[!]\e[0m SETUP FINISHED"
+echo -e "\e[1m\e[31m[!]\e[0m ========= SETUP FINISHED ========="
 echo -e "\e[1m\e[31m[!]\e[0m STATE SYNC ESTIMATION CAN TAKE 15-30 MINS PLEASE WAITTING"
-echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL sudo sudo journalctl -fu $MIS -o cat $MIS"
+echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL sudo sudo journalctl -fu misesmtd -o cat"
 # End
+
+
