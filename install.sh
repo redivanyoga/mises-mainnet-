@@ -17,6 +17,25 @@ MIS_ID=mainnet
 MIS_FOLDER=.misestm
 MIS_DENOM=umis
 
+echo "export MIS_WALLET=${MIS_WALLET}" >> $HOME/.bash_profile
+echo "export MIS=${MIS}" >> $HOME/.bash_profile
+echo "export MIS_ID=${MIS_ID}" >> $HOME/.bash_profile
+echo "export MIS_FOLDER=${MIS_FOLDER}" >> $HOME/.bash_profile
+echo "export MIS_VER=${MIS_VER}" >> $HOME/.bash_profile
+echo "export MIS_REPO=${MIS_REPO}" >> $HOME/.bash_profile
+echo "export MIS_DENOM=${MIS_DENOM}" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+
+# Set Vars
+if [ ! $MIS_NODENAME ]; then
+        read -p "silahkan masukan":~# [ENTER YOUR NODE] > " MIS_NODENAME
+        echo 'export MIS_NODENAME='$MIS_NODENAME >> $HOME/.bash_profile
+fi
+echo ""
+echo -e "YOUR NODE NAME : \e[1m\e[31m$MIS_NODENAME\e[0m"
+echo -e "NODE CHAIN ID  : \e[1m\e[31m$MIS_ID\e[0m"
+echo ""
+
 echo -e "\e[1m\e[32m1. Updating packages... \e[0m" && sleep 1
 # update
 sudo apt update && sudo apt upgrade -y
@@ -43,34 +62,6 @@ cd mises-tm/
 git checkout 1.0.4
 make build
 make install
-
-sleep 6
-
-echo "export MIS_WALLET=${MIS_WALLET}" >> $HOME/.bash_profile
-echo "export MIS=${MIS}" >> $HOME/.bash_profile
-echo "export MIS_ID=${MIS_ID}" >> $HOME/.bash_profile
-echo "export MIS_FOLDER=${MIS_FOLDER}" >> $HOME/.bash_profile
-echo "export MIS_VER=${MIS_VER}" >> $HOME/.bash_profile
-echo "export MIS_REPO=${MIS_REPO}" >> $HOME/.bash_profile
-echo "export MIS_DENOM=${MIS_DENOM}" >> $HOME/.bash_profile
-source $HOME/.bash_profile
-
-# Set Vars
-if [ ! $MIS_NODENAME ]; then
-        read -p "silahkan masukan":~# [ENTER YOUR NODE] > " MIS_NODENAME
-        echo 'export MIS_NODENAME='$MIS_NODENAME >> $HOME/.bash_profile
-fi
-echo ""
-echo -e "YOUR NODE NAME : \e[1m\e[31m$MIS_NODENAME\e[0m"
-echo -e "NODE CHAIN ID  : \e[1m\e[31m$MIS_ID\e[0m"
-echo ""
-
-# Get mainnet version of mises
-cd $HOME
-wget $MIS_REPO$MIS_VER/misestmd.linux-amd64.tar.gz
-tar -xvf misestmd.linux-amd64.tar.gz
-sudo mv build/$MIS /usr/bin/
-chmod +x /usr/bin/$MIS
 
 # Create Service
 sudo tee /etc/systemd/system/$MIS.service > /dev/null <<EOF
