@@ -1,14 +1,19 @@
 
+#
+
+echo -e "\033[0;31m"
+echo "               Auto Installer Mises Mainnet v1.0.4               ";
+echo -e "\e[0m"
+sleep 1
+
 # Variable
 MIS_WALLET=wallet
 MIS=misestmd
 MIS_ID=mainnet
 MIS_FOLDER=.misestm
 MIS_VER=1.0.4
-git clone https://github.com/mises-id/mises-tm/
-cd mises-tm/
-git checkout main
-make install
+MIS_REPO=https://github.com/mises-id/mises-tm/releases/download/
+MIS_DENOM=umis
 
 echo "export MIS_WALLET=${MIS_WALLET}" >> $HOME/.bash_profile
 echo "export MIS=${MIS}" >> $HOME/.bash_profile
@@ -73,6 +78,9 @@ $MIS init $MIS_NODENAME --chain-id $MIS_ID
 PEERS=40a8318fa18fa9d900f4b0d967df7b1020689fa0@e1.mises.site:26656
 sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/$MIS_FOLDER/config/config.toml
 
+# Create file genesis.json
+touch $HOME/$MIS_FOLDER/config/genesis.json
+
 # Set Config Gas
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.000025$MIS_DENOM\"/" $HOME/$MIS_FOLDER/config/app.toml
 
@@ -114,10 +122,11 @@ s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/$MIS_FOLDE
 # Start Service
 sudo systemctl start $MIS
 
-echo -e "\e[1m\e[31m[!]\e[0m SETUP FINISHED" :*
+echo -e "\e[1m\e[31m[!]\e[0m SETUP FINISHED"
 echo -e "\e[1m\e[31m[!]\e[0m STATE SYNC ESTIMATION CAN TAKE 15-30 MINS PLEASE WAITTING"
 echo ""
 echo -e "\e[1m\e[31m[!]\e[0m CHECK RUNNING LOGS : \e[1m\e[31mjournalctl -fu $MIS -o cat\e[0m"
 echo ""
 
 # End
+
