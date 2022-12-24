@@ -6,6 +6,7 @@ MIS_ID=mainnet
 MIS_FOLDER=.misestm
 MIS_VER=1.0.4
 MIS_REPO=https://github.com/mises-id/mises-tm/releases/download/
+
 MIS_DENOM=umis
 
 echo "export MIS_WALLET=${MIS_WALLET}" >> $HOME/.bash_profile
