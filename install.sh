@@ -101,34 +101,11 @@ sudo systemctl daemon-reload
 sudo systemctl enable misestmd
 sudo systemctl restart misestmd
 
-
-
-# Enable state sync
-misestmd unsafe-reset-all
-SNAP_RPC="https://e1.mises.site:443"
-
-LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
-BLOCK_HEIGHT=$((LATEST_HEIGHT - 500)); \
-TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
-
-echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
-
-sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
-s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
-s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
-s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.misestm/config/config.toml
-
-# Start Service
-sudo systemctl restart && sudo journalctl -fu misestmd -o cat
-
 echo -e "\e[1m\e[31m[!]\e[0m SETUP FINISHED"
 echo -e "\e[1m\e[31m[!]\e[0m STATE SYNC ESTIMATION CAN TAKE 15-30 MINS PLEASE WAITTING"
 echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL sudo sudo journalctl -fu $MIS -o cat $MIS"
 # End
 
 
-echo -e "\e[1m\e[31m[!]\e[0m ========= SETUP FINISHED ========="
-echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL journalctl -fu misesmtd -o cat"
-# End
 
 
