@@ -35,8 +35,14 @@ s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
 s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.misestm/config/config.toml
 ```
 
-# Start Service
+# Lalu Start Service
+```
 sudo systemctl restart && sudo journalctl -fu misestmd -o cat
+```
+#Chek chunk bila masuk 10 cunk brarti jalan
+```
+sudo journalctl -fu misestmd -o cat | grep chunk
+```
 
 ### Informasi node
 
