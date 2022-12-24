@@ -128,7 +128,7 @@ echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL sudo sudo journalctl -fu $MIS -o cat $M
 
 
 echo -e "\e[1m\e[31m[!]\e[0m ========= SETUP FINISHED ========="
-echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL  journalctl -fu misesmtd -o cat"
+echo -e "\e[1m\e[31m[!]\e[0m CEK JOURNAL journalctl -fu misesmtd -o cat"
 # End
 
 
