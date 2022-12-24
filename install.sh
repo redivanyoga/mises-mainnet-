@@ -12,6 +12,8 @@ MIS_VER=1.0.4
 MIS_REPO=https://github.com/mises-id/mises-tm/releases/download/
 MIS_DENOM=umis
 
+sleep 6
+
 echo "export MIS_WALLET=${MIS_WALLET}" >> $HOME/.bash_profile
 echo "export MIS=${MIS}" >> $HOME/.bash_profile
 echo "export MIS_ID=${MIS_ID}" >> $HOME/.bash_profile
